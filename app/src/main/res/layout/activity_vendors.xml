@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        tools:context=".Activities.VendorsActivity"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/vendors_sugg_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Suggested Events"
+                android:textSize="16sp"
+                android:background="@drawable/button_background"
+                android:layout_marginTop="4dp"
+                android:textColor="@android:color/white"
+                android:layout_margin="8dp" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/vendors_neg_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Negotiated Events"
+                android:textSize="16sp"
+                android:background="@drawable/button_background"
+                android:layout_marginTop="4dp"
+                android:textColor="@android:color/white"
+                android:layout_margin="8dp" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/vendors_list_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            tools:listitem="@layout/vendor_item" />
+
+
+    </LinearLayout>
+
+    <!-- NavigationView for the Drawer -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/header"
+        app:menu="@menu/main_menu" />
+
+</androidx.drawerlayout.widget.DrawerLayout>
