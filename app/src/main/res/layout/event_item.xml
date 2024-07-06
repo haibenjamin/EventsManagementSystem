@@ -50,7 +50,7 @@
             <com.google.android.material.imageview.ShapeableImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/location_icon"/>
+                android:src="@drawable/location"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/event_location_txt"
@@ -76,7 +76,7 @@
             <com.google.android.material.imageview.ShapeableImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/budget_icon"/>
+                android:src="@drawable/price"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/event_budget_txt"
@@ -102,7 +102,7 @@
             <com.google.android.material.imageview.ShapeableImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/event2_icon"/>
+                android:src="@drawable/date"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/event_date_txt"
@@ -128,7 +128,7 @@
             <com.google.android.material.imageview.ShapeableImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/status_icon"/>
+                android:src="@drawable/event"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/event_type_txt"

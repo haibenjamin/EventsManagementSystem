@@ -8,6 +8,7 @@
         android:id="@+id/guest_dialog_et"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
         android:hint="" />
 
 </LinearLayout>

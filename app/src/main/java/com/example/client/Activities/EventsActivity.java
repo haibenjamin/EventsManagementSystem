@@ -157,7 +157,6 @@ public class EventsActivity extends BaseActivity implements NavigationView.OnNav
             @Override
             public void onResponse(Call<RefreshResponse> call, Response<RefreshResponse> response) {
                 if (response.isSuccessful()){
-                    Log.i("RESPONSE REFRESH","");
                     ConnectionManager.logout(EventsActivity.this);
                 }
             }
@@ -171,7 +170,6 @@ public class EventsActivity extends BaseActivity implements NavigationView.OnNav
     }
     private void getEvents(String userId) {
         Call<EventResponse> call = ConnectionManager.apiService.getEvents(userId);
-
         call.enqueue(new Callback<EventResponse>() {
             @Override
             public void onResponse(Call<EventResponse> call, Response<EventResponse> response) {
@@ -181,14 +179,7 @@ public class EventsActivity extends BaseActivity implements NavigationView.OnNav
                         ArrayList<EventData> events = eventResponse.getEvents();
                         DataManager.setEvents(events);
                         initViews();
-                        Log.i("SUCCESS", "Retrieved " + events.size() + " events.");
-                        for (EventData event : events) {
-                            Log.i("EVENT", "Name: " + event.getName() + ", Date: " + event.getDate());
-                            Log.i("EVENT_ID",event.getId());
-                        }
 
-                    } else {
-                        Log.e("ERROR", "EventResponse is null");
                     }
                 } else {
                     try {
@@ -197,8 +188,6 @@ public class EventsActivity extends BaseActivity implements NavigationView.OnNav
                             Toast.makeText(EventsActivity.this, msg, Toast.LENGTH_LONG).show();
                         }
                         else{
-                            Log.i("UNAUTHORIZED","REFRESHING");
-                            Log.i("ACCESS TOKEN BEFORE REFRESH ",AuthManager.getInstance().getAccessToken());
                             getRefreshToken();
 
                         }
@@ -223,7 +212,6 @@ public class EventsActivity extends BaseActivity implements NavigationView.OnNav
 
             @Override
             public void onFailure(Call<EventResponse> call, Throwable t) {
-                // Handle network error
                 t.printStackTrace();
             }
         });
@@ -233,11 +221,6 @@ public class EventsActivity extends BaseActivity implements NavigationView.OnNav
 
         eventList = findViewById(R.id.event_list_rv);
         createBtn = findViewById(R.id.event_create_btn);
-        //deleteBtn=findViewById(R.id.event_delete_btn);
         navView=findViewById(R.id.nav_view);
-        //vendorsBtn=findViewById(R.id.event_vendors_btn);
-
-
-
     }
 }

@@ -1,5 +1,6 @@
 package com.example.client.Adapters;
 
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +16,16 @@ import com.example.client.Model.Guest;
 import com.example.client.Model.Task;
 import com.example.client.Model.sugTask;
 import com.example.client.R;
+import com.example.client.Util.DataManager;
 import com.example.client.Util.ImageLoader;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class SugTaskAdapter extends RecyclerView.Adapter<SugTaskAdapter.TaskViewHolder> {
+
 
     private ArrayList<String> tasks;
     private TaskCallBack taskCallBack;
@@ -49,12 +53,7 @@ public class SugTaskAdapter extends RecyclerView.Adapter<SugTaskAdapter.TaskView
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         String task = getItem(position);
         holder.task_task_txt.setText(task);
-
-
-
-
     }
-
     @Override
     public int getItemCount() {
         return this.tasks == null ? 0 : this.tasks.size();

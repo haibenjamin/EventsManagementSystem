@@ -8,10 +8,12 @@ import com.example.client.Model.Responses.GuestResponse;
 import com.example.client.Model.Responses.MyResponse;
 import com.example.client.Model.Responses.RefreshResponse;
 import com.example.client.Model.Responses.TaskResponse;
+import com.example.client.Model.Responses.UpcomingResponse;
 import com.example.client.Model.Responses.VendorResponse;
 import com.example.client.Model.SugVendor;
 import com.example.client.Model.Task;
 import com.example.client.Model.TasksArray;
+import com.example.client.Model.Upcoming;
 import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
@@ -123,4 +125,10 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     Call<MyResponse> deleteVendor(@Path("userId") String userId, @Path("eventID") String eventId,@Body JsonObject data);
 
+    @Headers("Content-Type: application/json")
+    @GET("users/{userId}/upcomingEvents")
+    Call<ArrayList<Upcoming>> getUpcomingEvents(@Path("userId") String userId);
+    @Headers("Content-Type: application/json")
+    @DELETE("users/{userId}/upcomingEvents/{eventId}")
+    Call<MyResponse> deleteUpcomingEvent(@Path("userId") String userId, @Path("eventId") String eventId);
 }

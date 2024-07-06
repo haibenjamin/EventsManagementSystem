@@ -58,7 +58,7 @@ import retrofit2.Response;
 
 public class GuestsActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     Button addBtn;
-    EditText nameET,phoneET;
+    EditText nameET, phoneET;
     RecyclerView guestList;
     GuestAdapter guestAdapter;
     Spinner dropDown;
@@ -81,20 +81,21 @@ public class GuestsActivity extends BaseActivity implements NavigationView.OnNav
 
             }
         });
-        ItemTouchHelper.SimpleCallback simpleCallback=new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT) {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
             }
 
             @Override
-            public void onSwiped( RecyclerView.ViewHolder viewHolder, int direction) {
-                int position=viewHolder.getAdapterPosition();
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
                 DataManager.deleteGuest(position);
                 guestAdapter.notifyDataSetChanged();
             }
         };
     }
+
     private void getGuestsFromServer() {
         String userId = ConnectionManager.getUserId();
         Call<GuestResponse> call = ConnectionManager.apiService.getGuests(userId, ConnectionManager.getSelectedEventId());
@@ -121,50 +122,44 @@ public class GuestsActivity extends BaseActivity implements NavigationView.OnNav
     private void initViews() {
         //DataManager.initList();
         guestAdapter = new GuestAdapter(DataManager.getGuests());
-       updateRecyclerView(guestAdapter);
-
-
+        updateRecyclerView(guestAdapter);
     }
 
     private void updateRecyclerView(GuestAdapter guestAdapter) {
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         guestList.setAdapter(guestAdapter);
         guestList.setLayoutManager(linearLayoutManager);
         guestAdapter.setGuestCallback(new GuestCallBack() {
-
             @Override
-            public void comingClicked(Guest guest, int position) {
+            public void deleteClicked(Guest guest, int position) {
 
-                //for now used to delete the item later will determine if guest is coming or not
-              //  guest.setComing(!guest.isComing());
-             ArrayList<String> selectedGuestsIDs=new ArrayList<>();
-             selectedGuestsIDs.add(guest.get_id());
-               Map<String,ArrayList<String>> requestBody= new HashMap<>();
-                requestBody.put("selectedGuestsIDs",selectedGuestsIDs);
-                String userId=ConnectionManager.getUserId();
+                ArrayList<String> selectedGuestsIDs = new ArrayList<>();
+                selectedGuestsIDs.add(guest.get_id());
+                Map<String, ArrayList<String>> requestBody = new HashMap<>();
+                requestBody.put("selectedGuestsIDs", selectedGuestsIDs);
+                String userId = ConnectionManager.getUserId();
                 String eventID = ConnectionManager.getSelectedEventId();
-   Call<EventResponse> call= ConnectionManager.apiService.deleteGuests(userId,eventID,requestBody);
-   call.enqueue(new Callback<EventResponse>() {
-       @Override
-       public void onResponse(Call<EventResponse> call, Response<EventResponse> response) {
-           if(response.isSuccessful()){
-               Log.i("DELETED GUEST",guest.getName());
-               DataManager.deleteGuest(position);
-               guestList.getAdapter().notifyDataSetChanged();
+                Call<EventResponse> call = ConnectionManager.apiService.deleteGuests(userId, eventID, requestBody);
+                call.enqueue(new Callback<EventResponse>() {
+                    @Override
+                    public void onResponse(Call<EventResponse> call, Response<EventResponse> response) {
+                        if (response.isSuccessful()) {
+                            DataManager.deleteGuest(position);
+                            guestList.getAdapter().notifyDataSetChanged();
+                            Toast.makeText(GuestsActivity.this,"Task Deleted Successfully",Toast.LENGTH_SHORT).show();
 
-           }
-           else{
-               Log.i("DELETE GUEST FAILED",response.errorBody().toString());
-           }
-       }
 
-       @Override
-       public void onFailure(Call<EventResponse> call, Throwable t) {
-           Log.i("FAILED",t.getMessage());
-       }
-   });
+                        } else {
+                            Log.i("DELETE GUEST FAILED", response.errorBody().toString());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<EventResponse> call, Throwable t) {
+                        Log.i("FAILED", t.getMessage());
+                    }
+                });
             }
 
             @Override
@@ -174,28 +169,28 @@ public class GuestsActivity extends BaseActivity implements NavigationView.OnNav
 
             @Override
             public void guestsClicked(Guest guest, int position) {
-                showAlertDialog(guest,"people count");
+                showAlertDialog(guest, "people count");
             }
 
             @Override
-            public void commentClicked(Guest guest, int position){
-               // showAlertDialog(guest,"comments");
+            public void commentClicked(Guest guest, int position) {
+                // showAlertDialog(guest,"comments");
             }
         });
     }
 
 
-    private void showAlertDialog(Guest guest,String title) {
+    private void showAlertDialog(Guest guest, String title) {
         LayoutInflater inflater = getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.edit_guest_dialog, null);
-        EditText contentET= dialogLayout.findViewById(R.id.guest_dialog_et);
+        EditText contentET = dialogLayout.findViewById(R.id.guest_dialog_et);
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
         builder.setView(dialogLayout);
-        builder.setTitle("Change "+title);
+        builder.setTitle("Change " + title);
         builder.setPositiveButton("OK", null);
-        builder.setNegativeButton("Cancel",(dialog,which)->dialog.cancel());
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
-// Create and show the dialog
+        // Create and show the dialog
         AlertDialog dialog = builder.create();
         dialog.show();
 
@@ -204,64 +199,67 @@ public class GuestsActivity extends BaseActivity implements NavigationView.OnNav
             String input = contentET.getText().toString().trim();
             if (input.isEmpty())
                 Toast.makeText(GuestsActivity.this, "Input cannot be empty", Toast.LENGTH_SHORT).show();
-            else if(!ConnectionManager.isNumeric(input)&&title.equals("people count"))
-                Toast.makeText(GuestsActivity.this, title+" must be a number", Toast.LENGTH_SHORT).show();
+            else if (!ConnectionManager.isNumeric(input) && title.equals("people count"))
+                Toast.makeText(GuestsActivity.this, title + " must be a number", Toast.LENGTH_SHORT).show();
             else {
                 // Input is valid, dismiss the dialog
                 dialog.dismiss();
                 // Handle the input
-                handleInput(input,contentET,title,guest);
+                handleInput(input, contentET, title, guest);
             }
         });
     }
 
-    private void handleInput(String input,EditText contentET,String title,Guest guest) {
-        String content=contentET.getText().toString();
+    private void handleInput(String input, EditText contentET, String title, Guest guest) {
+        String content = contentET.getText().toString();
         if (!content.isEmpty())
-            switch (title){
+            switch (title) {
 
-                case "people count":{
-                        updateGuestsNumber(guest,content);}
+                case "people count": {
+                    updateGuestsNumber(guest, content);
+                }
                 break;
-                case "group":{
-                    updateGuestGroup(guest,content);}
+                case "group": {
+                    updateGuestGroup(guest, content);
+                }
                 break;
-                case "phone":{
-                    updateGuestPhone(guest,content);}
+                case "phone": {
+                    updateGuestPhone(guest, content);
+                }
                 break;
-                case "comments":{
-                    updateGuestComments(guest,content);}
+                case "comments": {
+                    updateGuestComments(guest, content);
+                }
                 break;
             }
-        else{
-            Toast.makeText(GuestsActivity.this,"Please enter "+title,Toast.LENGTH_SHORT).show();
+        else {
+            Toast.makeText(GuestsActivity.this, "Please enter " + title, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void updateGuestComments(Guest guest, String content)
-    {
+    private void updateGuestComments(Guest guest, String content) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("comments", content);
-    Call<MyResponse> call = ConnectionManager.apiService.updateComment(ConnectionManager.getUserId(),
-            ConnectionManager.getSelectedEventId(),guest.get_id(),jsonObject);
+        Call<MyResponse> call = ConnectionManager.apiService.updateComment(ConnectionManager.getUserId(),
+                ConnectionManager.getSelectedEventId(), guest.get_id(), jsonObject);
         call.enqueue(new Callback<MyResponse>() {
-        @Override
-        public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-            if (response.isSuccessful()) {
-                Toast.makeText(GuestsActivity.this, "comment updated successfully", Toast.LENGTH_SHORT).show();
-                DataManager.updateComment(guest,content);
-                initViews();
+            @Override
+            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(GuestsActivity.this, "comment updated successfully", Toast.LENGTH_SHORT).show();
+                    DataManager.updateComment(guest, content);
+                    initViews();
+                }
+
             }
 
-        }
+            @Override
+            public void onFailure(Call<MyResponse> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
 
-        @Override
-        public void onFailure(Call<MyResponse> call, Throwable t) {
-            t.printStackTrace();
-        }
-    });
-
-}
+    }
 
     private void updateGuestPhone(Guest guest, String content) {
     }
@@ -273,13 +271,13 @@ public class GuestsActivity extends BaseActivity implements NavigationView.OnNav
         JsonObject num = new JsonObject();
         num.addProperty("peopleCount", numStr);
         Call<MyResponse> call = ConnectionManager.apiService.updateStatus(ConnectionManager.getUserId(),
-                ConnectionManager.getSelectedEventId(),guest.get_id(),num);
+                ConnectionManager.getSelectedEventId(), guest.get_id(), num);
         call.enqueue(new Callback<MyResponse>() {
             @Override
             public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(GuestsActivity.this, "number of guests updated successfully", Toast.LENGTH_SHORT).show();
-                    DataManager.updateNumOfGuests(guest,Integer.valueOf(numStr));
+                    DataManager.updateNumOfGuests(guest, Integer.valueOf(numStr));
                     initViews();
                 }
 
@@ -303,8 +301,8 @@ public class GuestsActivity extends BaseActivity implements NavigationView.OnNav
 
 
         //initialize dropdown
-        String[] items = new String[] {"Message Sent","Coming","Not Coming","Maybe"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,items);
+        String[] items = new String[]{"Message Sent", "Coming", "Not Coming", "Maybe"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
         spinnerStatus.setAdapter(adapter);
 
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
@@ -315,7 +313,7 @@ public class GuestsActivity extends BaseActivity implements NavigationView.OnNav
             public void onClick(DialogInterface dialog, int which) {
                 // Handle the OK button click
                 try {
-                    updateStatus(guest,spinnerStatus.getSelectedItem().toString());
+                    updateStatus(guest, spinnerStatus.getSelectedItem().toString());
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -328,22 +326,16 @@ public class GuestsActivity extends BaseActivity implements NavigationView.OnNav
                 dialog.cancel();
             }
         });
-
-// Create and show the dialog
-
-
-
-
         //show dialog
         AlertDialog dialog = builder.create();
         dialog.show();
     }
 
-    private void updateStatus(Guest guest,String selectedStatus) throws JSONException {
+    private void updateStatus(Guest guest, String selectedStatus) throws JSONException {
         JsonObject status = new JsonObject();
         status.addProperty("status", selectedStatus);
         Call<MyResponse> call = ConnectionManager.apiService.updateStatus(ConnectionManager.getUserId(),
-                ConnectionManager.getSelectedEventId(),guest.get_id(),status);
+                ConnectionManager.getSelectedEventId(), guest.get_id(), status);
         call.enqueue(new Callback<MyResponse>() {
             @Override
             public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
@@ -376,8 +368,8 @@ public class GuestsActivity extends BaseActivity implements NavigationView.OnNav
         Button buttonCancel = dialog.findViewById(R.id.buttonCancel);
 
         //initialize dropdown
-        String[] items = new String[] {"Message Sent","Coming","Not Coming","Maybe"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,items);
+        String[] items = new String[]{"Message Sent", "Coming", "Not Coming", "Maybe"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
         spinnerStatus.setAdapter(adapter);
 
         // Set up the "Add" button click listener
@@ -395,7 +387,7 @@ public class GuestsActivity extends BaseActivity implements NavigationView.OnNav
                 if (ConnectionManager.isNumeric(guests)) {
                     peopleCount = Integer.parseInt(guests);
                 }
-                if(verifyPhoneNumber(phoneNumber)) {
+                if (verifyPhoneNumber(phoneNumber)) {
                     formattedPhoneNum = formatPhoneNumber(phoneNumber);
                     Guest newGuest = new Guest(name, formattedPhoneNum, peopleCount, group, status, comments);
                     Call<MyResponse> call = ConnectionManager.apiService.addGuest(ConnectionManager.getUserId(), ConnectionManager.getSelectedEventId(), newGuest);
@@ -403,9 +395,8 @@ public class GuestsActivity extends BaseActivity implements NavigationView.OnNav
                         @Override
                         public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
                             if (response.isSuccessful()) {
-                                Log.i("ADD GUEST", response.code() + " " + response.message());
+                                Toast.makeText(GuestsActivity.this,"Guest Added Successfully",Toast.LENGTH_SHORT).show();
                                 DataManager.addGuest(newGuest);
-                              //  updateRecyclerView(guestAdapter);
                                 Intent intent = getIntent();
                                 finish();
                                 startActivity(intent);
@@ -415,18 +406,17 @@ public class GuestsActivity extends BaseActivity implements NavigationView.OnNav
                                 try {
                                     String errorBody = response.errorBody().string();
                                     Gson gson = new Gson();
-                                    Type errorResponseType = new TypeToken<ErrorResponse>() {}.getType();
+                                    Type errorResponseType = new TypeToken<ErrorResponse>() {
+                                    }.getType();
                                     ErrorResponse errorResponse = gson.fromJson(errorBody, errorResponseType);
-                                    if (errorResponse.getErrors()!=null)
-                                    {
+                                    if (errorResponse.getErrors() != null) {
                                         Toast.makeText(GuestsActivity.this, errorResponse.getErrors().get(0).getMsg(), Toast.LENGTH_LONG).show();
 
-                                    // Log or handle the errors
-                                    for (ErrorResponse.Error error : errorResponse.getErrors()) {
-                                        Log.i("ERROR", "Type: " + error.getType() + ", Message: " + error.getMsg());
-                                    }
-                                    }
-                                    else{
+                                        // Log or handle the errors
+                                        for (ErrorResponse.Error error : errorResponse.getErrors()) {
+                                            Log.i("ERROR", "Type: " + error.getType() + ", Message: " + error.getMsg());
+                                        }
+                                    } else {
                                         JsonObject jsonObject = JsonParser.parseString(errorBody).getAsJsonObject();
                                         String errorMessage = jsonObject.get("err").getAsString();
                                         Toast.makeText(GuestsActivity.this, errorMessage, Toast.LENGTH_LONG).show();
@@ -443,8 +433,6 @@ public class GuestsActivity extends BaseActivity implements NavigationView.OnNav
                         }
                     });
                 }
-
-
             }
         });
 
@@ -463,14 +451,13 @@ public class GuestsActivity extends BaseActivity implements NavigationView.OnNav
     private boolean verifyPhoneNumber(String phoneNumber) {
         // Check if the phone number is null or has an incorrect length
         if (phoneNumber == null || phoneNumber.length() != 10) {
-            Toast.makeText(GuestsActivity.this,"Phone number must be 10 digits long.",Toast.LENGTH_SHORT).show();
+            Toast.makeText(GuestsActivity.this, "Phone number must be 10 digits long.", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
     }
 
     public String formatPhoneNumber(String phoneNumber) {
-
 
         // Split the phone number into parts
         String part1 = phoneNumber.substring(0, 3);
@@ -480,19 +467,13 @@ public class GuestsActivity extends BaseActivity implements NavigationView.OnNav
         // Combine the parts with dashes
         return part1 + "-" + part2 + part3;
     }
-
-
     private void setGuests(ArrayList<Guest> guests) {
         DataManager.setGuests(guests);
         initViews();
     }
-
-
     private void findViews() {
-        addBtn=findViewById(R.id.guest_add_btn);
-        guestList=findViewById(R.id.guest_list_rv) ;
-        navView=findViewById(R.id.nav_view);
-
-
+        addBtn = findViewById(R.id.guest_add_btn);
+        guestList = findViewById(R.id.guest_list_rv);
+        navView = findViewById(R.id.nav_view);
     }
 }

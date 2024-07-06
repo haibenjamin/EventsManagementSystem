@@ -93,8 +93,6 @@ public class ConnectionManager extends AsyncTask<String, Void, String> {
             }
         });
     }
-
-
     @Override
     protected String doInBackground(String... params) {
         String urlString = params[0]; // URL to call
@@ -178,11 +176,6 @@ public class ConnectionManager extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        /*   if ("GET".equalsIgnoreCase(requestType) && callback != null) {
-            callback.onResponse(result);
-        } else {
-            Log.i("POST Result", result);
-        }*/
         int code;
         String message;
         String[] results;

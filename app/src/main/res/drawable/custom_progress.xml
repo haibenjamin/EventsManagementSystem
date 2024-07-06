@@ -1,0 +1,5 @@
+<!-- res/drawable/custom_progress.xml -->
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/progress_circle"
+    android:pivotX="50%"
+    android:pivotY="50%" />

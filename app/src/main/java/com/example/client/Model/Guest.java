@@ -7,7 +7,7 @@ public class Guest {
         private int peopleCount;
         private String group;
         private String status;
-        private String comments;
+        private String comments="";
         private String event;
         private long createdAt;
         private long updatedAt;
@@ -83,6 +83,8 @@ public class Guest {
         }
 
     public String getComments() {
+             if (comments==null)
+                 comments="";
              return this.comments;
     }
 }

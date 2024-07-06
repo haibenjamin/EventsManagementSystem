@@ -1,0 +1,7 @@
+<!-- res/drawable/progress_circle.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="ring"
+    android:useLevel="false"
+    android:thicknessRatio="10"
+    android:innerRadiusRatio="3"
+    android:color="@android:color/white" />

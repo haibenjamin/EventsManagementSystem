@@ -31,24 +31,20 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CreateEventActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
-    Button createBTN;
+    Button createBTN,selectDateBTN;
     EditText nameET,dateET,budgetET;
     Spinner typeDropdown,locationDropdown;
-    Button selectDateBTN;
     TextView selectedDateTxt;
-
     long selectedDate=-1;
     private NavigationView navView;
-   // public AuthManager authManager;
-    //public Retrofit retrofit;
-    //public ApiService apiService;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //check if logged in
         if(!AuthManager.getInstance().getIsConnected())
             startActivity(new Intent(CreateEventActivity.this,LoginActivity.class));
+
         setContentView(R.layout.activity_create_event);
         setupDrawer();
         findViews();
@@ -56,62 +52,44 @@ public class CreateEventActivity extends BaseActivity implements NavigationView.
             @Override
             public void onDateSelected(long epochTime) {
                 selectedDate=epochTime;
-                //selectedDateTxt.setText(""+calendar.getTime().toString());
                 String formattedDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(epochTime * 1000L);
                 selectedDateTxt.setText(formattedDate);
-
-
             }
         }));
         navView.setNavigationItemSelectedListener(this);
+       initRecyclerViews();
+        createBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                    String userId = ConnectionManager.getUserId(); // Your function to decode JWT and extract userId
+                    String name="",location="",dateStr="",budgetStr="",type="";
+                    ArrayList<Collaborator> collab = new ArrayList<>();
+                    int budget=0;
+
+                    //getInputs
+                     name=nameET.getText().toString();
+                     location=locationDropdown.getSelectedItem().toString();
+                     budgetStr=budgetET.getText().toString();
+                     type=typeDropdown.getSelectedItem().toString();
+
+                    if( validateInput(name,location,budgetStr,type,selectedDate)) {
+                        budget=Integer.parseInt(budgetStr);
+                        EventData eventData = new EventData(name, budget, selectedDate, location, type, collab);
+                        postEvent(userId, eventData);
+                    }
+            }
+        });
+            }
+
+
+    private void initRecyclerViews() {
         String[] typeItems = new String[] {"Birthday","Wedding","Conference","Company Event","Bar/Bat Mitzva"};
         String[] locationItems = new String[] {"Haifa & North","Hasharon","Gush Dan","Shfela","Jerusalem","South(Negev And Eilat)"};
         ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,typeItems);
         ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,locationItems);
         typeDropdown.setAdapter(typeAdapter);
         locationDropdown.setAdapter(locationAdapter);
-        createBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                    // Example usage
-                    ConnectionManager.addPathToRoot("/");
-                    String baseUrl = ConnectionManager.URL;
-                    String accessToken = AuthManager.getInstance().getAccessToken();
-                    //retrofit = RetrofitClient.getClient(baseUrl,accessToken);
-
-                    //apiService = retrofit.create(ApiService.class);
-
-                    // Example usage
-
-                    String userId = ConnectionManager.getUserId(); // Your function to decode JWT and extract userId
-                    String name="",location="",dateStr="",budgetStr="",type="";
-                ArrayList<Collaborator> collab = new ArrayList<>();
-                collab.add(new Collaborator("hai2@gmail.com"));
-                    int budget=0;
-                    long date;
-
-                    name=nameET.getText().toString();
-                    location=locationDropdown.getSelectedItem().toString();
-                    budgetStr=budgetET.getText().toString();
-                    type=typeDropdown.getSelectedItem().toString();
-                    date=selectedDate;
-                    if( validateInput(name,location,budgetStr,type,date)) {
-                        budget=Integer.parseInt(budgetStr);
-                        EventData eventData = new EventData(name, budget, selectedDate, location, type, collab);
-                        postEvent(userId, eventData);
-                    }
-
-
-
-
-
-
-
-
-            }
-        });
-            }
+    }
 
     private boolean validateInput(String name, String location, String budgetStr,String type,long date) {
 
@@ -156,7 +134,7 @@ public class CreateEventActivity extends BaseActivity implements NavigationView.
             public void onResponse(Call<EventResponse> call, Response<EventResponse> response) {
                 if (response.isSuccessful()) {
                    Toast.makeText(CreateEventActivity.this,"Event "+nameET.getText().toString()+" Created Succssesfully",Toast.LENGTH_LONG).show();
-                   startActivity(new Intent(CreateEventActivity.this,MainActivity.class));
+                   startActivity(new Intent(CreateEventActivity.this,EventsActivity.class));
                 } else {
 
                     try {
@@ -177,25 +155,14 @@ public class CreateEventActivity extends BaseActivity implements NavigationView.
             }
         });
     }
-
-
-   /* private String decodeJwt(String accessToken) {
-
-        return authManager.getUserId();
-    }
-    public boolean isNumeric(String str) {
-        return str != null && str.matches("-?\\d+");
-    }*/
     private void findViews() {
         createBTN = findViewById(R.id.event_create_btn);
         nameET=findViewById(R.id.event_name_et);
-       // dateET=findViewById(R.id.event_date_et);
         budgetET=findViewById(R.id.event_budget_et);
         locationDropdown=findViewById(R.id.event_location_dd);
-        //authManager=AuthManager.getInstance();
         typeDropdown=findViewById(R.id.event_type_dd);
         navView=findViewById(R.id.nav_view);
-selectDateBTN=findViewById(R.id.event_select_date_btn);
-selectedDateTxt=findViewById(R.id.event_selected_date_txt);
+        selectDateBTN=findViewById(R.id.event_select_date_btn);
+        selectedDateTxt=findViewById(R.id.event_selected_date_txt);
     }
 }

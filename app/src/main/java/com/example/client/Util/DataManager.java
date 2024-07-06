@@ -1,15 +1,20 @@
 package com.example.client.Util;
 import android.util.Log;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.client.Model.EventData;
 import com.example.client.Model.Guest;
 import com.example.client.Model.SugVendor;
 import com.example.client.Model.Task;
+import com.example.client.Model.Upcoming;
 import com.example.client.Model.Vendor;
 import com.example.client.Model.sugTask;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public  class DataManager {
     static ArrayList<Guest> guests;
@@ -19,7 +24,8 @@ public  class DataManager {
     static ArrayList<SugVendor> suggestedVendors;
     static ArrayList<SugVendor> addedVendors;
     static ArrayList<SugVendor> negotiatedVendors;
-   static String[] collab = {"hai2@gmail.com"};
+    static ArrayList<Upcoming> upcomingList;
+    static ArrayList<String> headerList;
 
     public static void initList(){
         guests= new ArrayList<>();
@@ -46,7 +52,6 @@ public  class DataManager {
             for (Task task : tasks) {
             if (task.getColumn().equals( column)) {
                 filteredTasks.add(task);
-                Log.i("TASK",task.getColumn()+"Added , selected="+task.getSelected() );
             }
 
         }
@@ -64,6 +69,9 @@ public  class DataManager {
     public static void deleteEvent(int position){
         events.remove(position);
     }
+    public static void deleteUpcomingEvent(int position){
+        upcomingList.remove(position);
+    }
 
     public static void setEvents(ArrayList<EventData> events) {
         DataManager.events=events;
@@ -75,6 +83,9 @@ public  class DataManager {
     }
     public static String getEventId(int pos){
         return events.get(pos).getId();
+    }
+    public static String getUpcomingEventId(int pos){
+        return upcomingList.get(pos).getId();
     }
 
     public static void setGuests(ArrayList<Guest> guestList) {
@@ -102,19 +113,27 @@ public  class DataManager {
     public static ArrayList<sugTask> getSuggestedTasks() {
         return suggestedTasks;
     }
+    public static ArrayList<sugTask> getSuggestedByType(String type){
+        ArrayList<sugTask> newList = new ArrayList<>();
+        for (sugTask suggtask : suggestedTasks)
+            if (suggtask.getCategory().equals(type))
+                newList.add(suggtask);
+        return newList;
+    }
 
     public static void setSuggestedTasks(ArrayList<sugTask> suggestedTasks) {
         DataManager.suggestedTasks = suggestedTasks;
     }
-    public static ArrayList<String> getSuggestedTasksToString(){
-        ArrayList<String> tasks = new ArrayList<>();
-        for(sugTask task : suggestedTasks){
-            for (String taskStr : task.getTasks()){
-                tasks.add(taskStr);
+    public static ArrayList<String> getSuggestedTasksToString() {
+        ArrayList<String> sugTasks= new ArrayList<>();
+        int counter=0;
+        for (sugTask task : suggestedTasks) {
+            sugTasks.add(""+counter);
+            for (String taskStr : task.getTasks()) {
+                sugTasks.add(taskStr);
             }
         }
-        return tasks;
-
+        return sugTasks;
     }
 
     public static void deleteSuggTask(String selectedTask) {
@@ -190,5 +209,23 @@ public  class DataManager {
 
     public static void addVendor(SugVendor vendor) {
         addedVendors.add(vendor);
+    }
+
+    public static void setPrice(SugVendor selectedVendor, int price) {
+        for (SugVendor vendor : negotiatedVendors){
+            if (vendor.equals(selectedVendor))
+                vendor.setPriceForService(price);
+        }
+    }
+
+    public static ArrayList<Upcoming> getUpcomingEvents() {
+        return upcomingList;
+    }
+    public static void setUpcomingList(ArrayList<Upcoming> upcomingList) {
+        DataManager.upcomingList = upcomingList;
+    }
+
+    public static ArrayList<String> getHeadersList() {
+        return headerList;
     }
 }

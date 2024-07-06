@@ -49,6 +49,7 @@ public class VendorAdapter extends RecyclerView.Adapter<VendorAdapter.VendorView
         holder.vendor_mail_txt.setText(vendor.getEmail());
         holder.vendor_type_txt.setText(vendor.getBusinessType());
         holder.vendor_leads_txt.setText("" + vendor.getLeadCount());
+        holder.vendor_price_txt.setText(""+vendor.getPriceForService());
 
         switch (viewType) {
             case ADDED_VENDORS: {
@@ -97,7 +98,7 @@ public class VendorAdapter extends RecyclerView.Adapter<VendorAdapter.VendorView
     public class VendorViewHolder extends RecyclerView.ViewHolder {
         private CardView vendor_vendor_cv;
         private ShapeableImageView delBtn, acceptBtn, declineBtn, logo;
-        private TextView vendor_name_txt, vendor_mail_txt, vendor_type_txt, vendor_leads_txt;
+        private TextView vendor_name_txt, vendor_mail_txt, vendor_type_txt, vendor_leads_txt,vendor_price_txt;
         private LinearLayout layout_linear_price;
         private Button contactBtn;
 
@@ -107,6 +108,7 @@ public class VendorAdapter extends RecyclerView.Adapter<VendorAdapter.VendorView
             vendor_name_txt = itemView.findViewById(R.id.vendor_name_txt);
             vendor_mail_txt = itemView.findViewById(R.id.vendor_mail_txt);
             vendor_type_txt = itemView.findViewById(R.id.vendor_type_txt);
+            vendor_price_txt=itemView.findViewById(R.id.event_price_txt);
             delBtn = itemView.findViewById(R.id.vendor_delete_btn);
             acceptBtn = itemView.findViewById(R.id.vendor_accept_btn);
             declineBtn = itemView.findViewById(R.id.vendor_decline_btn);

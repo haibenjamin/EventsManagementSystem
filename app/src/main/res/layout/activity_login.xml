@@ -12,9 +12,6 @@
         android:layout_height="match_parent">
 
         <!-- Toolbar -->
-        <include
-            android:id="@+id/toolbar"
-            layout="@layout/toolbar" />
 
         <!-- Login Form -->
         <LinearLayout
@@ -22,8 +19,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center_horizontal"
-            android:padding="16dp"
-            android:layout_below="@id/toolbar">
+            android:padding="16dp">
 
             <!-- Logo -->
             <com.google.android.material.imageview.ShapeableImageView

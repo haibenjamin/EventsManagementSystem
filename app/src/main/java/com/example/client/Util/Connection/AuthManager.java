@@ -9,7 +9,7 @@ import com.example.client.Model.UserInfo;
 
 public class AuthManager {
 
-    private String accessToken;
+    private String accessToken,role,name;
     private boolean isConneted;
     private static AuthManager instance;
     private JWT jwt;
@@ -19,6 +19,18 @@ public class AuthManager {
             instance = new AuthManager();
         }
         return instance;
+    }
+
+    public String getRole() {
+            return role;
+        }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getAccessToken(){
@@ -61,6 +73,10 @@ public class AuthManager {
     }
 
 
-
-
+    public void setRole() {
+        if (jwt!=null){
+            Claim claim = jwt.getClaim("userInfo");
+            role= claim.asObject(UserInfo.class).getRole();
+        }
+    }
 }

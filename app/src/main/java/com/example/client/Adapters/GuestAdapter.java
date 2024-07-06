@@ -92,7 +92,7 @@ public class GuestAdapter extends RecyclerView.Adapter<GuestAdapter.GuestViewHol
 
             guest_coming_icon.setOnClickListener(v -> {
                 if (guestCallback != null)
-                    guestCallback.comingClicked(getItem(getAdapterPosition()), getAdapterPosition());
+                    guestCallback.deleteClicked(getItem(getAdapterPosition()), getAdapterPosition());
             });
             guest_status_txt.setOnClickListener(new View.OnClickListener() {
                 @Override

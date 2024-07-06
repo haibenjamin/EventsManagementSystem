@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.client.Adapters.NegVendorAdapter;
 import com.example.client.Adapters.SugTaskAdapter;
@@ -23,6 +25,7 @@ import com.example.client.Callback.VendorCallBack;
 import com.example.client.Model.Responses.MyResponse;
 import com.example.client.Model.Responses.VendorResponse;
 import com.example.client.Model.SugVendor;
+import com.example.client.Model.Task;
 import com.example.client.R;
 import com.example.client.Util.Connection.ConnectionManager;
 import com.example.client.Util.DataManager;
@@ -108,7 +111,8 @@ public class VendorsActivity extends BaseActivity implements NavigationView.OnNa
         negVendorAdapter.setNegVendorCallBack(new NegVendorCallBack() {
             @Override
             public void acceptClicked(SugVendor vendor, int position) {
-                MoveToAddedVendors(vendor);
+                askForPrice(vendor);
+
 
             }
 
@@ -121,9 +125,66 @@ public class VendorsActivity extends BaseActivity implements NavigationView.OnNa
         });
     }
 
-    private void MoveToAddedVendors(SugVendor vendor) {
+    private void askForPrice(SugVendor vendor) {
+        showAlertDialog(vendor);
+    }
+
+    private void showAlertDialog(SugVendor vendor) {
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogLayout = inflater.inflate(R.layout.add_price_dialog, null);
+
+        //init views
+        final EditText priceTxt = dialogLayout.findViewById(R.id.dialog_price_et);
+
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(dialogLayout);
+        builder.setTitle("Add Price");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Handle the OK button click
+                int price;
+                price=verifyPrice(priceTxt.getText().toString());
+                if (price>0) {
+                    DataManager.setPrice(vendor,price);
+                    MoveToAddedVendors(vendor, price);
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        // Create and show the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private int verifyPrice(String priceStr) {
+        if (!priceStr.equals("")) {
+            if (ConnectionManager.isNumeric(priceStr)) {
+                return Integer.parseInt(priceStr);
+            }
+            else{
+                Toast.makeText(VendorsActivity.this, "price must be a number", Toast.LENGTH_SHORT).show();
+                return 0;
+            }
+        }
+        else {
+            Toast.makeText(VendorsActivity.this, "please enter the given price by the vendor", Toast.LENGTH_SHORT).show();
+            return 0;
+        }
+
+    }
+
+    private void MoveToAddedVendors(SugVendor vendor,int price) {
         JsonObject json = new JsonObject();
-        json.addProperty("priceForService",1500);
+        json.addProperty("priceForService",price);
         Call<MyResponse> call = ConnectionManager.apiService.addToMyVendors(ConnectionManager.getUserId(),ConnectionManager.getSelectedEventId(),vendor.get_id(),json);
         call.enqueue(new Callback<MyResponse>() {
             @Override

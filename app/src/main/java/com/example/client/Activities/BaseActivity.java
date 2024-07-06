@@ -18,7 +18,6 @@ import com.google.android.material.navigation.NavigationView;
 public class BaseActivity extends AppCompatActivity implements NavigationListener {
 
     protected DrawerLayout drawerLayout;
-   // protected NavigationView navView;
     protected ActionBarDrawerToggle drawerToggle;
 
     @Override

@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.client.Adapters.GuestAdapter;
 import com.example.client.Adapters.SugTaskAdapter;
@@ -59,10 +60,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TasksActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener  {
-    ImageButton backlogDownBtn,todoUpBtn, todoDownBtn, inprogUpBtn, inprogDownBtn, completeUpBtn, backlogAddBtn, todoAddBtn, inprogAddBtn,completeAddBtn;
-    Button saveBtn,sugBtn;
-    RecyclerView backlogList,todoList, inprogList,completeList;
+public class TasksActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+    ImageButton backlogDownBtn, todoUpBtn, todoDownBtn, inprogUpBtn, inprogDownBtn, completeUpBtn, backlogAddBtn, todoAddBtn, inprogAddBtn, completeAddBtn;
+    Button saveBtn, sugBtn;
+    RecyclerView backlogList, todoList, inprogList, completeList;
     TaskAdapter taskAdapter;
     ShapeableImageView delBtn;
     private NavigationView navView;
@@ -85,30 +86,26 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
         backlogDownBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                moveTasks("Backlog","TODO");
-
-
+                moveTasks("Backlog", "TODO");
             }
         });
         todoDownBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                moveTasks("TODO","In progress");
-
-
+                moveTasks("TODO", "In progress");
             }
         });
         todoUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                moveTasks("TODO","Backlog");
+                moveTasks("TODO", "Backlog");
             }
         });
 
         inprogDownBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                moveTasks("In progress","Complete");
+                moveTasks("In progress", "Complete");
 
 
             }
@@ -116,28 +113,34 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
         inprogUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                moveTasks("In progress","TODO");
+                moveTasks("In progress", "TODO");
             }
         });
         completeUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                moveTasks("Complete","In progress");
-
-
+                moveTasks("Complete", "In progress");
             }
         });
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch(view.getId()){
-                    case R.id.tasks_backlog_add_btn:{addTask("Backlog");}
-                        break;
-                    case R.id.tasks_todo_add_btn:{addTask("TODO");}
+                switch (view.getId()) {
+                    case R.id.tasks_backlog_add_btn: {
+                        addTask("Backlog");
+                    }
                     break;
-                    case R.id.tasks_inprog_add_btn:{addTask("In progress");}
+                    case R.id.tasks_todo_add_btn: {
+                        addTask("TODO");
+                    }
                     break;
-                    case R.id.tasks_complete_add_btn:{addTask("Complete");}
+                    case R.id.tasks_inprog_add_btn: {
+                        addTask("In progress");
+                    }
+                    break;
+                    case R.id.tasks_complete_add_btn: {
+                        addTask("Complete");
+                    }
                     break;
 
                 }
@@ -156,9 +159,7 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
         });
 
 
-
     }
-
 
 
     private void showSuggestedTasks() {
@@ -175,7 +176,6 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
 // Build the AlertDialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(dialogLayout);
-        builder.setTitle("Suggested Tasks");
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -206,9 +206,8 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
                     TaskResponse taskResponse = response.body();
                     if (taskResponse != null) {
                         ArrayList<Task> tasks = taskResponse.getTasks();
-                        ArrayList<sugTask> suggestedTasks=taskResponse.getSuggestedTasks();
-                        Log.i("TASKS",tasks.toString());
-                        DataManager.setTasks(tasks,suggestedTasks);
+                        ArrayList<sugTask> suggestedTasks = taskResponse.getSuggestedTasks();
+                        DataManager.setTasks(tasks, suggestedTasks);
                         initViews();
 
                     }
@@ -218,7 +217,7 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
 
             @Override
             public void onFailure(Call<TaskResponse> call, Throwable t) {
-                Log.i("ERROR",t.toString() );
+                Log.i("ERROR", t.toString());
             }
         });
     }
@@ -227,13 +226,12 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
         TasksArray tasks = new TasksArray();
         ArrayList<Task> updatedTasksLocal = DataManager.getTasks();
         tasks.setTasks(updatedTasksLocal);
-        Log.i("UPDATED TASKS",tasks.toString());
-        Call call = ConnectionManager.apiService.updateTasks(ConnectionManager.getUserId(),ConnectionManager.getSelectedEventId(),tasks);
+        Call call = ConnectionManager.apiService.updateTasks(ConnectionManager.getUserId(), ConnectionManager.getSelectedEventId(), tasks);
         call.enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) {
-                if (response.isSuccessful()){
-                    Log.i("SAVE TASKS",response.code()+" "+response.message());
+                if (response.isSuccessful()) {
+                    Toast.makeText(TasksActivity.this,"Task Updated Successfully",Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -247,7 +245,6 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
 
     private void addTask(String column) {
         showAlertDialog(column);
-
     }
 
     private void showAlertDialog(String column) {
@@ -263,13 +260,11 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
             public void onClick(DialogInterface dialog, int which) {
                 // Handle the OK button click
                 String inputText = editText.getText().toString();
-                if (inputText!=null){
-                    Task task = new Task(inputText,column);
+                if (inputText != null) {
+                    Task task = new Task(inputText, column);
 
                     DataManager.addTask(task);
                     postAddTask(task);
-                    //saveTasks();
-                    //updateTaskList();
                     initViews();
                 }
                 dialog.dismiss();
@@ -300,9 +295,8 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
     }
 
 
-
     private void postAddTask(Task task) {
-        JsonObject  newCard= null;
+        JsonObject newCard = null;
         try {
             newCard = convertTaskToJson(task);
         } catch (Exception e) {
@@ -318,9 +312,9 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
             @Override
             public void onResponse(Call<TaskResponse> call, Response<TaskResponse> response) {
                 if (response.isSuccessful()) {
-                    Log.i("ADDED SUCCESSFULLY", task.getTitle());
+                    Toast.makeText(TasksActivity.this,"Task Added Successfully",Toast.LENGTH_SHORT).show();
                 } else {
-                    Log.e("ERROR", "Failed to add task: " + response.errorBody().toString());
+                    Toast.makeText(TasksActivity.this,"Error while trying to add the tasks",Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -332,28 +326,16 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
     }
 
 
-
     private void moveTasks(String from, String to) {
         ArrayList<Task> selected = getSelectedTasks(DataManager.getTaskByColumn(from));
-
-        // Log the selected tasks before updating
-        Log.i("BEFORE UPDATE", "Selected tasks before update: " + selected.toString());
 
         // Update the column of the selected tasks locally
         for (Task task : selected) {
             task.setSelected();
             task.setColumn(to);
         }
-
-        // Log the selected tasks after updating locally
-        Log.i("AFTER UPDATE", "Selected tasks after update: " + selected.toString());
-
-        // Ensure DataManager is updated with the modified tasks
-       // DataManager.setTasks(selected);
-
         // Verify DataManager has updated tasks
         ArrayList<Task> updatedTasksLocal = DataManager.getTasks();
-        Log.i("LOCAL UPDATED TASKS", "Tasks in DataManager after update: " + updatedTasksLocal.toString());
         saveTasks();
         initViews(); // Assuming this refreshes the UI with the updated local tasks
 
@@ -371,17 +353,6 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
             public void onResponse(Call<TaskResponse> call, Response<TaskResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ArrayList<Task> updatedTasks = response.body().getTasks();
-                    Log.i("UPDATED TASKS FETCHED", "Tasks fetched from server: " + updatedTasks.toString());
-
-                    // Verify the fetched tasks are updated
-                    for (Task task : updatedTasks) {
-                        if ("aaaa".equals(task.getTitle())) {
-                            Log.i("TASK STATUS", "Task title: " + task.getTitle() + ", Column: " + task.getColumn());
-                        }
-                    }
-                } else {
-                    Log.e("FETCH ERROR", "Failed to fetch updated tasks. Response code: " + response.code());
-                    Log.e("FETCH ERROR", "Response message: " + response.message());
                 }
             }
 
@@ -406,7 +377,7 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
                     if (taskResponse != null) {
                         ArrayList<Task> tasks = taskResponse.getTasks();
                         ArrayList<sugTask> sugTasks = taskResponse.getSuggestedTasks();
-                        DataManager.setTasks(tasks,sugTasks);
+                        DataManager.setTasks(tasks, sugTasks);
                     }
                 }
 
@@ -414,16 +385,16 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
 
             @Override
             public void onFailure(Call<TaskResponse> call, Throwable t) {
-                Log.i("ERROR",t.toString() );
+                t.printStackTrace();
             }
         });
 
     }
 
     private ArrayList<Task> getSelectedTasks(ArrayList<Task> tasks) {
-        ArrayList<Task> selected=new ArrayList<>();
-        for (Task task:tasks
-             ) {
+        ArrayList<Task> selected = new ArrayList<>();
+        for (Task task : tasks
+        ) {
             if (task.getSelected())
                 selected.add(task);
 
@@ -439,8 +410,7 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
                     Field field = background.getClass().getDeclaredField("mColor");
                     field.setAccessible(true);
                     return (int) field.get(background);
-                }
-                catch(NoSuchFieldException|IllegalAccessException e){
+                } catch (NoSuchFieldException | IllegalAccessException e) {
                     e.printStackTrace();
 
                 }
@@ -448,7 +418,8 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
         }
         return Color.TRANSPARENT;
     }
-    private void updateRecyclerView(SugTaskAdapter sugTaskAdapter,RecyclerView sugList) {
+
+    private void updateRecyclerView(SugTaskAdapter sugTaskAdapter, RecyclerView sugList) {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
@@ -462,12 +433,13 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
 
             @Override
             public void taskClicked(CardView taskView, String task, int position) {
-                taskView.setVisibility(View.GONE);
-               DataManager.deleteSuggTask(task);
-                SugTaskAdapter sugTasksAdapter = new SugTaskAdapter(DataManager.getSuggestedTasksToString());
-                updateRecyclerView(sugTasksAdapter,sugList);
-                postAddTask(new Task(task,"Backlog"));
-                initViews();
+                    taskView.setVisibility(View.GONE);
+                    DataManager.deleteSuggTask(task);
+                    SugTaskAdapter sugTasksAdapter = new SugTaskAdapter(DataManager.getSuggestedTasksToString());
+                    updateRecyclerView(sugTasksAdapter, sugList);
+                    postAddTask(new Task(task, "Backlog"));
+                    initViews();
+
 
             }
 
@@ -477,10 +449,19 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
             }
         });
     }
-    private void updateRecyclerView( TaskAdapter todoTaskAdapter  ,
- TaskAdapter inProgressTaskAdapter,
-         TaskAdapter backlogTaskAdapter,
-         TaskAdapter completeTaskAdapter  ) {
+
+    private boolean checkNotHeader(String task) {
+        String[] headers = {"decorations", "music & entertainment", "food & drinks", "vendor", "setup", "logistics"};
+        for (String str : headers)
+            if (task.equals(str))
+                return false;
+        return true;
+    }
+
+    private void updateRecyclerView(TaskAdapter todoTaskAdapter,
+                                    TaskAdapter inProgressTaskAdapter,
+                                    TaskAdapter backlogTaskAdapter,
+                                    TaskAdapter completeTaskAdapter) {
 
         LinearLayoutManager todoLayoutManager = new LinearLayoutManager(this);
         todoLayoutManager.setOrientation(RecyclerView.VERTICAL);
@@ -488,9 +469,8 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
         todoList.setLayoutManager(todoLayoutManager);
         todoTaskAdapter.setTaskCallBack(new TaskCallBack() {
             @Override
-            public void taskClicked(CardView taskView,Task task ,int position) {
-                selectTask(taskView,task,position);
-
+            public void taskClicked(CardView taskView, Task task, int position) {
+                selectTask(taskView, task, position);
 
 
             }
@@ -515,8 +495,8 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
         inprogList.setLayoutManager(inprogLayoutManager);
         inProgressTaskAdapter.setTaskCallBack(new TaskCallBack() {
             @Override
-            public void taskClicked(CardView taskView,Task task , int position) {
-                selectTask(taskView,task,position);
+            public void taskClicked(CardView taskView, Task task, int position) {
+                selectTask(taskView, task, position);
             }
 
             @Override
@@ -539,8 +519,8 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
         backlogList.setLayoutManager(backlogLayoutManager);
         backlogTaskAdapter.setTaskCallBack(new TaskCallBack() {
             @Override
-            public void taskClicked(CardView taskView,Task task , int position) {
-                selectTask(taskView,task,position);
+            public void taskClicked(CardView taskView, Task task, int position) {
+                selectTask(taskView, task, position);
             }
 
             @Override
@@ -563,8 +543,8 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
         completeList.setLayoutManager(completeLayoutManager);
         completeTaskAdapter.setTaskCallBack(new TaskCallBack() {
             @Override
-            public void taskClicked(CardView taskView,Task task, int position) {
-                selectTask(taskView,task,position);
+            public void taskClicked(CardView taskView, Task task, int position) {
+                selectTask(taskView, task, position);
             }
 
             @Override
@@ -574,7 +554,7 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
 
             @Override
             public void deleteClicked(Task task, int position) {
-                Log.i("CLICKED DELETE TASK COMPELTE",position+"");
+                Log.i("CLICKED DELETE TASK COMPELTE", position + "");
                 DataManager.getTasks().remove(task);
                 deleteTask(task);
                 completeList.getAdapter().notifyDataSetChanged();
@@ -584,16 +564,17 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
     }
 
     private void deleteTask(Task task) {
-        String userId,eventId,taskId;
-        userId=ConnectionManager.getUserId();
-        eventId=ConnectionManager.getSelectedEventId();
-        taskId=task.getId();
-        Call call = ConnectionManager.apiService.deleteTask(userId,eventId,taskId);
+        String userId, eventId, taskId;
+        userId = ConnectionManager.getUserId();
+        eventId = ConnectionManager.getSelectedEventId();
+        taskId = task.getId();
+        Call call = ConnectionManager.apiService.deleteTask(userId, eventId, taskId);
         call.enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) {
-                if(response.isSuccessful())
-                    Log.i("DELETED TASK",task.getId());
+                if (response.isSuccessful()) {
+                    Toast.makeText(TasksActivity.this,"Task Deleted Successfully",Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -604,55 +585,47 @@ public class TasksActivity extends BaseActivity implements NavigationView.OnNavi
         });
     }
 
-    private void selectTask(CardView taskView,Task task, int position) {
+    private void selectTask(CardView taskView, Task task, int position) {
         task.setSelected();
 
-        if(task.getSelected()) {
+        if (task.getSelected()) {
             taskView.setCardBackgroundColor(getResources().getColor(R.color.teal_200));
-           // Log.i("CLICKED",""+position);
-        }
-        else{
+        } else {
             taskView.setCardBackgroundColor(getResources().getColor(R.color.white));
         }
     }
 
     private void initViews() {
-        //DataManager.initList();
-        //taskAdapter = new TaskAdapter(DataManager.getTasks());
-
-
-        TaskAdapter todoTaskAdapter       = new TaskAdapter(DataManager.getTaskByColumn("TODO"));
+        TaskAdapter todoTaskAdapter = new TaskAdapter(DataManager.getTaskByColumn("TODO"));
         TaskAdapter inProgressTaskAdapter = new TaskAdapter(DataManager.getTaskByColumn("In progress"));
-        TaskAdapter backlogTaskAdapter    = new TaskAdapter(DataManager.getTaskByColumn("Backlog"));
-        TaskAdapter completeTaskAdapter   =new TaskAdapter(DataManager.getTaskByColumn("Complete"));
+        TaskAdapter backlogTaskAdapter = new TaskAdapter(DataManager.getTaskByColumn("Backlog"));
+        TaskAdapter completeTaskAdapter = new TaskAdapter(DataManager.getTaskByColumn("Complete"));
         updateRecyclerView(todoTaskAdapter,
-                        inProgressTaskAdapter,
+                inProgressTaskAdapter,
                 backlogTaskAdapter,
-                        completeTaskAdapter);
-
+                completeTaskAdapter);
 
 
     }
+
     private void findViews() {
-        backlogDownBtn=findViewById(R.id.tasks_backlog_down_btn);
-        todoUpBtn=findViewById(R.id.tasks_todo_up_btn);
-        todoDownBtn=findViewById(R.id.tasks_todo_down_btn);
-        inprogUpBtn=findViewById(R.id.tasks_inprog_up_btn);
-        inprogDownBtn=findViewById(R.id.tasks_inprog_down_btn);
-        completeUpBtn=findViewById(R.id.tasks_complete_up_btn);
-         backlogList=findViewById(R.id.tasks_backlog_rv);
-         todoList=findViewById(R.id.tasks_todo_rv);
-         inprogList=findViewById(R.id.tasks_inprog_rv);
-         completeList=findViewById(R.id.tasks_complete_rv);
-        navView=findViewById(R.id.nav_view);
-        delBtn=findViewById(R.id.task_delete_img);
-        backlogAddBtn=findViewById(R.id.tasks_backlog_add_btn);
-        todoAddBtn=findViewById(R.id.tasks_todo_add_btn);
-        completeAddBtn=findViewById(R.id.tasks_complete_add_btn);
-        inprogAddBtn=findViewById(R.id.tasks_inprog_add_btn);
-        saveBtn=findViewById(R.id.tasks_save_btn);
-        sugBtn=findViewById(R.id.tasks_suggested_btn);
-
-
+        backlogDownBtn = findViewById(R.id.tasks_backlog_down_btn);
+        todoUpBtn = findViewById(R.id.tasks_todo_up_btn);
+        todoDownBtn = findViewById(R.id.tasks_todo_down_btn);
+        inprogUpBtn = findViewById(R.id.tasks_inprog_up_btn);
+        inprogDownBtn = findViewById(R.id.tasks_inprog_down_btn);
+        completeUpBtn = findViewById(R.id.tasks_complete_up_btn);
+        backlogList = findViewById(R.id.tasks_backlog_rv);
+        todoList = findViewById(R.id.tasks_todo_rv);
+        inprogList = findViewById(R.id.tasks_inprog_rv);
+        completeList = findViewById(R.id.tasks_complete_rv);
+        navView = findViewById(R.id.nav_view);
+        delBtn = findViewById(R.id.task_delete_img);
+        backlogAddBtn = findViewById(R.id.tasks_backlog_add_btn);
+        todoAddBtn = findViewById(R.id.tasks_todo_add_btn);
+        completeAddBtn = findViewById(R.id.tasks_complete_add_btn);
+        inprogAddBtn = findViewById(R.id.tasks_inprog_add_btn);
+        saveBtn = findViewById(R.id.tasks_save_btn);
+        sugBtn = findViewById(R.id.tasks_suggested_btn);
     }
 }

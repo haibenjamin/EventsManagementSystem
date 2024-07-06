@@ -4,8 +4,22 @@ public class SugVendor {
     private String _id,email,businessName,businessType;
     private int leadCount,priceForService;
 
+    public SugVendor(String email, String businessName, String businessType) {
+        this.email = email;
+        this.businessName = businessName;
+        this.businessType = businessType;
+    }
+
     public String get_id() {
         return _id;
+    }
+
+    public int getPriceForService() {
+        return priceForService;
+    }
+
+    public void setPriceForService(int priceForService) {
+        this.priceForService = priceForService;
     }
 
     public void set_id(String _id) {
@@ -54,4 +68,5 @@ public class SugVendor {
                 ", leadCount=" + leadCount +
                 '}';
     }
+
 }
