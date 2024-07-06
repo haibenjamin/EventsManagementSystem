@@ -58,7 +58,7 @@ To run the Event Planner mobile client locally, follow these steps:
   
 ## Configuration
 
-- Update the server endpoint in ApiClient.java file to point to your Express and React server.
+- Change the root IP String in ConnectionManager.java class to match your server's IP address.
 - Ensure the server is running and accessible from the mobile client.
 
   
